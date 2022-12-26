@@ -8,6 +8,7 @@ import sys, os, re
 import signal
 from dataclasses import dataclass
 import subprocess as sp
+import tomli
 
 
 @dataclass
@@ -48,7 +49,7 @@ class Compiler:
         if "all_warnings_command" in options:
             Compiler.all_warnings_command = options["all_warnings_command"]
 
-        if options["debug_symbols"]:
+        if options["valgrind"]:
             Compiler.command += " -g2"
             Compiler.all_warnings_command += " -g2"
         
@@ -216,14 +217,16 @@ class Analyser:
 
 class Input(dict):
     required = ["filename"]
-    booleans = ["all_warnings"]
+    
     defaults = {
         "all_warnings" : True,
-        "debug_symbols" : True,
         "arguments" : "",
-        "valgrind" : True,
-        "valgrind_path" : "valgrind",
-        "valgrind_log_file" : "valgrind_log.txt"
+        "valgrind" : {
+            "enable" : True,
+            "path" : "valgrind",
+            "log_file" : "valgrind_log.txt"
+        }
+        
     }
     
     def __init__(self, input_file):
@@ -231,31 +234,12 @@ class Input(dict):
         
         self.input_file = input_file
         
-        with open(input_file) as f:
-            for line in f.readlines():
-                line = line.strip()
-                if line[0] != '#' and len(line) > 0:
-                    spl = [s.strip() for s in line.split("=", 1)]
-                    if len(spl) == 2:
-                        self[spl[0]] = spl[1]
-                    else:
-                        print(f"Malformed line '{line}'", file=sys.stderr)
-                        
+        with open(input_file, "rb") as f:
+            options = tomli.load(f)
+            self.update(options)
+        
         self._check()
         
-    def __setitem__(self, key, value):
-        if key in self.booleans and isinstance(value, str):
-            cap_value = value.capitalize()
-            if cap_value == "True":
-                value = True
-            elif cap_value == "False":
-                value = False
-            else:
-                print(f"Invalid boolean value '{value}' set for key '{key}'", file=sys.stderr)
-                return
-                
-        super().__setitem__(key, value)
-                        
     def _check(self):
         for key in Input.required:
             if key not in self:

@@ -1,0 +1,8 @@
+filename = "mycode.c"
+arguments = ""
+all_warnings = true
+
+[valgrind]
+enable = true
+path = "valgrind"
+log_file = "valgrind_log.txt"
