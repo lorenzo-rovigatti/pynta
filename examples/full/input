@@ -1,8 +1,15 @@
 filename = "mycode.c"
 arguments = ""
+
+[compilation]
+command = "gcc"
 all_warnings = true
+all_warnings_command = "gcc -Wall"
 
 [valgrind]
 enable = true
-path = "valgrind"
-log_file = "valgrind_log.txt"
+command = "valgrind --leak-check=full --show-leak-kinds=all"
+xml_file = "valgrind_log.xml"
+
+[output]
+files = ["output.dat"]
