@@ -9,6 +9,7 @@ import subprocess as sp
 from typing import List, Optional
 
 import defusedxml.ElementTree as et
+from pickle import NONE
 
 
 class Error:
@@ -246,7 +247,9 @@ class Launcher:
         return self.return_code == 0
 
     def execute(self):
-        result = sp.run(self.command, stdout=sp.PIPE, stderr=sp.PIPE, text=True)
+        stdin =  self.options["execution"]["stdin"]
+        
+        result = sp.run(self.command, stdout=sp.PIPE, stderr=sp.PIPE, input=stdin, text=True)
         
         self.return_code = result.returncode
         self.stdout = result.stdout
@@ -254,7 +257,7 @@ class Launcher:
         
         if self.valgrind_enabled:
             command = f"{self.options['valgrind']['command']} --xml=yes --xml-file={self.options['valgrind']['xml_file']} {self.exe_file}".split()
-            sp.run(command, stdout=sp.PIPE, stderr=sp.PIPE, text=True)
+            sp.run(command, stdout=sp.PIPE, stderr=sp.PIPE, input=stdin, text=True)
             
             self.valgrind_data = ValgrindData()
             self.valgrind_data.parse(self.options['valgrind']['xml_file'])

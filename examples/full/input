@@ -7,6 +7,10 @@ all_warnings_command = "gcc -Wall"
 
 [execution]
 arguments = ""
+stdin = """
+1
+2 3
+"""
 
 [valgrind]
 enable = true

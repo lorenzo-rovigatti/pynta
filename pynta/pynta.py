@@ -27,6 +27,7 @@ class Input(dict):
         },
         "execution" : {
             "arguments" : "",
+            "stdin" : None
         },
         "valgrind" : {
             "enable" : True,
