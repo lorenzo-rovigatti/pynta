@@ -25,7 +25,9 @@ class Input(dict):
             "all_warnings" : True,
             "all_warnings_command" : "gcc -Wall"
         },
-        "arguments" : "",
+        "execution" : {
+            "arguments" : "",
+        },
         "valgrind" : {
             "enable" : True,
             "command" : "valgrind --leak-check=full --show-leak-kinds=all",
@@ -61,7 +63,11 @@ if __name__ == '__main__':
     compiler = Compiler(options)
     compiler.write_report("compilation_report.txt")
     
+    print(compiler.summary())
+    
     if compiler.compiled():
         launcher = Launcher(options, compiler.exe_file)
         launcher.write_report("execution_report.txt")
+        
+        print(launcher.summary())
     

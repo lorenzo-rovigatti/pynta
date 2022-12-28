@@ -220,10 +220,27 @@ class Launcher:
     def __init__(self, options, exe_file):
         self.options = options
         self.exe_file = exe_file
-        self.arguments = self.options["arguments"].split()
+        self.arguments = self.options["execution"]["arguments"].split()
         self.command = [self.exe_file] + self.arguments
+        self.valgrind_enabled = self.options["valgrind"]["enable"]
         
         self.execute()
+        
+    def summary(self):
+        lines = []
+        
+        if self.success():
+            lines.append("Execution: OK")
+        else:
+            lines.append("Execution: FAILED")
+            
+        if self.valgrind_enabled:
+            if self.valgrind_data.get_num_errors() == 0:
+                lines.append("Valgrind: CLEAN")
+            else:
+                lines.append("Valgrind: {} ERRORS".format(self.valgrind_data.get_num_errors()))
+            
+        return "\n".join(lines)
         
     def success(self):
         return self.return_code == 0
@@ -234,6 +251,14 @@ class Launcher:
         self.return_code = result.returncode
         self.stdout = result.stdout
         self.stderr = result.stderr
+        
+        if self.valgrind_enabled:
+            command = f"{self.options['valgrind']['command']} --xml=yes --xml-file={self.options['valgrind']['xml_file']} {self.exe_file}".split()
+            sp.run(command, stdout=sp.PIPE, stderr=sp.PIPE, text=True)
+            
+            self.valgrind_data = ValgrindData()
+            self.valgrind_data.parse(self.options['valgrind']['xml_file'])
+            
         
     def write_report(self, filename):
         with open(filename, "w") as f:
@@ -258,21 +283,15 @@ class Launcher:
                 elif self.return_code == -signal.SIGABRT:
                     print(f"Error type: SIGABRT\n", file=f)
                     
-            if self.options["valgrind"]["enable"]:
-                command = f"{self.options['valgrind']['command']} --xml=yes --xml-file={self.options['valgrind']['xml_file']} {self.exe_file}".split()
-                sp.run(command, stdout=sp.PIPE, stderr=sp.PIPE, text=True)
-                
-                valgrind_data = ValgrindData()
-                valgrind_data.parse(self.options['valgrind']['xml_file'])
-                
+            if self.valgrind_enabled:
                 print("------------------------", file=f)
                 print(f"VALGRIND ANALYSIS", file=f)
                 print("------------------------\n", file=f)
                 
-                if len(valgrind_data.errors) > 0:
+                if self.valgrind_data.get_num_errors() > 0:
                     print("Valgrind reported the following issues\n", file=f)
-                    for kind in valgrind_data.list_error_kinds():
-                        filtered = valgrind_data.filter_error_kind(kind)
+                    for kind in self.valgrind_data.list_error_kinds():
+                        filtered = self.valgrind_data.filter_error_kind(kind)
                         for error in filtered.errors:
                             print(error, "\n", file=f)
                 else:

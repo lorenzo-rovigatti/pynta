@@ -1,10 +1,12 @@
 filename = "mycode.c"
-arguments = ""
 
 [compilation]
 command = "gcc"
 all_warnings = true
 all_warnings_command = "gcc -Wall"
+
+[execution]
+arguments = ""
 
 [valgrind]
 enable = true

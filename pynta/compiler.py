@@ -52,7 +52,24 @@ class Compiler:
         self.source_file = options["filename"]
         exe_name = os.path.splitext(self.source_file)[0]
         self.exe_file = os.path.join(os.getcwd(), exe_name)
+        
+        if not os.path.isfile(self.source_file):
+            raise Exception(f"Source file '{self.source_file}' does not exist or it is not accessible")
+        
         self.compile()
+        
+    def summary(self):
+        lines = []
+        
+        if self.compiled():
+            lines.append(u"Compilation: OK ({} warnings)".format(len(self.warnings)))
+        else:
+            lines.append("Compilation: FAILED ({} errors)".format(len(self.errors)))
+            
+        if self.all_warnings:
+            lines.append("\tCompiling with all warnings enabled found {} warnings".format(len(self.all_warnings)))
+            
+        return "\n".join(lines)
 
     def _severity(self, message):
         if "error" in message:
