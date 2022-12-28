@@ -7,10 +7,9 @@ Created on Dec 27, 2022
 import signal, os
 import subprocess as sp
 from typing import List, Optional
-
 import defusedxml.ElementTree as et
-from pickle import NONE
 
+from utils import print_log_section
 
 class Error:
     def __init__(self, tag) -> None:
@@ -263,19 +262,15 @@ class Launcher:
             self.valgrind_data.parse(self.options['valgrind']['xml_file'])
             
         
-    def write_report(self, filename):
-        with open(filename, "w") as f:
+    def write_report(self):
+        with open(self.options["execution"]["report_path"], "w") as f:
             if self.success():
                 print("--> EXECUTION SUCCESSFUL <--\n", file=f)
                 
-                print("------------------------", file=f)
-                print(f"STANDARD OUTPUT", file=f)
-                print("------------------------\n", file=f)
+                print_log_section(f"STANDARD OUTPUT", f)
                 print(self.stdout, file=f)
                 
-                print("------------------------", file=f)
-                print(f"STANDARD ERROR", file=f)
-                print("------------------------\n", file=f)
+                print_log_section(f"STANDARD ERROR", f)
                 print(self.stderr, file=f)
             else:
                 print("--> EXECUTION FAILED <--\n", file=f)
@@ -287,9 +282,7 @@ class Launcher:
                     print(f"Error type: SIGABRT\n", file=f)
                     
             if self.valgrind_enabled:
-                print("------------------------", file=f)
-                print(f"VALGRIND ANALYSIS", file=f)
-                print("------------------------\n", file=f)
+                print_log_section(f"VALGRIND ANALYSIS", f)
                 
                 if self.valgrind_data.get_num_errors() > 0:
                     print("Valgrind reported the following issues\n", file=f)

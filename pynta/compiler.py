@@ -8,6 +8,8 @@ from dataclasses import dataclass
 import os, re
 import subprocess as sp
 
+from utils import print_log_section
+
 @dataclass
 class Entry:
     '''
@@ -50,7 +52,7 @@ class Compiler:
         self.errors = list()
         
         self.source_file = options["filename"]
-        exe_name = os.path.splitext(self.source_file)[0]
+        exe_name = os.path.splitext(os.path.basename(self.source_file))[0]
         self.exe_file = os.path.join(os.getcwd(), exe_name)
         
         if not os.path.isfile(self.source_file):
@@ -144,17 +146,15 @@ class Compiler:
                 if entry is not None and entry.severity == "warning":
                     self.all_warnings.append(entry)
                     
-    def write_report(self, filename):
-        with open(filename, "w") as f:
+    def write_report(self):
+        with open(self.options["compilation"]["report_path"], "w") as f:
             if self.compiled():
                 print("--> COMPILATION SUCCESSFUL <--", file=f)
             else:
                 print("--> COMPILATION FAILED <--", file=f)
             print("", file=f)
             
-            print("------------------------", file=f)
-            print(f"OUTPUT FOR '{self.command}'", file=f)
-            print("------------------------\n", file=f)
+            print_log_section(f"OUTPUT FOR '{self.command}'", f)
             for e in self.errors:
                 print(e, file=f)
     
@@ -162,9 +162,7 @@ class Compiler:
                 print(w, file=f)
         
             if self.options["compilation"]["all_warnings"]:
-                print("\n------------------------", file=f)
-                print(f"OUTPUT FOR '{self.all_warnings_command}'", file=f)
-                print("------------------------\n", file=f)
+                print_log_section(f"OUTPUT FOR '{self.all_warnings_command}'", f)
                 
                 for w in self.all_warnings:
                     print(w, file=f)

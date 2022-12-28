@@ -1,11 +1,13 @@
 filename = "mycode.c"
 
 [compilation]
+report_path = "compilation_report.txt"
 command = "gcc"
 all_warnings = true
 all_warnings_command = "gcc -Wall"
 
 [execution]
+report_path = "execution_report.txt"
 arguments = ""
 stdin = """
 1

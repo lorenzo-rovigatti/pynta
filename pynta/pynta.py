@@ -23,11 +23,13 @@ class Input(dict):
         "compilation" : {
             "command" : "gcc",
             "all_warnings" : True,
-            "all_warnings_command" : "gcc -Wall"
+            "all_warnings_command" : "gcc -Wall",
+            "report_path" : "compilation_report.txt"
         },
         "execution" : {
             "arguments" : "",
-            "stdin" : None
+            "stdin" : None,
+            "report_path" : "execution_report.txt"
         },
         "valgrind" : {
             "enable" : True,
@@ -62,13 +64,13 @@ if __name__ == '__main__':
         
     options = Input(sys.argv[1])
     compiler = Compiler(options)
-    compiler.write_report("compilation_report.txt")
+    compiler.write_report()
     
     print(compiler.summary())
     
     if compiler.compiled():
         launcher = Launcher(options, compiler.exe_file)
-        launcher.write_report("execution_report.txt")
+        launcher.write_report()
         
         print(launcher.summary())
     
