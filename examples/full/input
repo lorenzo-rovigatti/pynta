@@ -13,11 +13,21 @@ stdin = """
 1
 2 3
 """
+expected_return_code = 0
 
 [valgrind]
 enable = true
 command = "valgrind --leak-check=full --show-leak-kinds=all"
 xml_file = "valgrind_log.xml"
 
-[output]
-files = ["output.dat"]
+[[output]]
+type = "stdout"
+empty = true
+
+[[output]]
+type = "stderr"
+empty = true
+
+[[output]]
+type = "file"
+name = "output.dat"

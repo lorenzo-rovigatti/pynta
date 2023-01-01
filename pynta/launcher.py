@@ -4,7 +4,7 @@ Created on Dec 27, 2022
 @author: lorenzo
 '''
 
-import signal, os
+import signal, os, sys
 import subprocess as sp
 from typing import List, Optional
 import defusedxml.ElementTree as et
@@ -22,11 +22,7 @@ class Error:
         else:
             what_tag = tag.find("xwhat/text")
             if what_tag is None:
-                raise ValueError(
-                    "Cannot find either <what> or <xwhat> tags, "
-                    "please report this issue "
-                    "to the ValgrindCI project on GitHub."
-                )
+                raise ValueError("Cannot find either <what> or <xwhat> tags")
             else:
                 self.what = what_tag.text
         self.kind: str = tag.find("kind").text
@@ -224,6 +220,7 @@ class Launcher:
         self.command = [self.exe_file] + self.arguments
         self.valgrind_enabled = self.options["valgrind"]["enable"]
         
+        self.delete_output_files()
         self.execute()
         
     def summary(self):
@@ -243,7 +240,15 @@ class Launcher:
         return "\n".join(lines)
         
     def success(self):
-        return self.return_code == 0
+        return self.return_code == self.options["execution"]["expected_return_code"]
+    
+    def delete_output_files(self):
+        for output in self.options["output"]:
+            if output["type"] == "file":
+                filename = output["name"]
+                if os.path.isfile(filename):
+                    print(f"NOTE: attempting to remove output file '{filename}'", file=sys.stderr)
+                    os.remove(filename)
 
     def execute(self):
         stdin =  self.options["execution"]["stdin"]

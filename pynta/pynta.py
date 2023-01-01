@@ -9,6 +9,7 @@ import tomli
 
 from compiler import Compiler
 from launcher import Launcher
+from output import CheckOutput
 
 
 class Analyser:
@@ -29,7 +30,8 @@ class Input(dict):
         "execution" : {
             "arguments" : "",
             "stdin" : None,
-            "report_path" : "execution_report.txt"
+            "report_path" : "execution_report.txt",
+            "expected_return_code" : 0
         },
         "valgrind" : {
             "enable" : True,
@@ -45,7 +47,11 @@ class Input(dict):
         self.input_file = input_file
         
         with open(input_file, "rb") as f:
-            options = tomli.load(f)
+            try:
+                options = tomli.load(f)
+            except tomli.TOMLDecodeError as e:
+                print(f"Cannot parse input file {input_file}: {e}", file=sys.stderr)
+                exit(1)
             self.update(options)
         
         self._check()
@@ -55,6 +61,15 @@ class Input(dict):
             if key not in self:
                 print(f"Required key '{key}' not found in '{self.input_file}'", file=sys.stderr)
                 exit(1)
+                
+        for output in self["output"]:
+            if output["type"] not in ["stdout", "stderr", "file"]:
+                print(f"Invalid output type '{output['type']}'", file=sys.stderr)
+                exit(1)
+            if output["type"] == "file":
+                if "name" not in output:
+                    print("The 'name' option is mandatory for output files", file=sys.stderr)
+                    exit(1)
 
 
 if __name__ == '__main__':
@@ -73,4 +88,6 @@ if __name__ == '__main__':
         launcher.write_report()
         
         print(launcher.summary())
+        
+        check_output = CheckOutput(options, launcher.stdout, launcher.stderr)
     
