@@ -10,6 +10,7 @@ import subprocess as sp
 
 from utils import print_log_section
 
+
 @dataclass
 class Entry:
     '''
@@ -155,6 +156,7 @@ class Compiler:
             print("", file=f)
             
             print_log_section(f"OUTPUT FOR '{self.command}'", f)
+            
             for e in self.errors:
                 print(e, file=f)
     

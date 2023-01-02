@@ -37,7 +37,8 @@ class Input(dict):
             "enable" : True,
             "command" : "valgrind --leak-check=full --show-leak-kinds=all",
             "xml_file" : "valgrind_log.xml"
-        }
+        },
+        "output_report_path" : "output_report.txt"
         
     }
     
@@ -80,14 +81,14 @@ if __name__ == '__main__':
     options = Input(sys.argv[1])
     compiler = Compiler(options)
     compiler.write_report()
-    
     print(compiler.summary())
     
     if compiler.compiled():
         launcher = Launcher(options, compiler.exe_file)
         launcher.write_report()
-        
         print(launcher.summary())
         
         check_output = CheckOutput(options, launcher.stdout, launcher.stderr)
+        check_output.write_report()
+        print(check_output.summary())
     

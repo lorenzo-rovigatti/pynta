@@ -11,7 +11,9 @@ import defusedxml.ElementTree as et
 
 from utils import print_log_section
 
+
 class Error:
+
     def __init__(self, tag) -> None:
         self.stack: List[Frame] = []
         # bugfix-issue#1: valgrind 3.15.0 does not generate
@@ -64,6 +66,7 @@ class Error:
 
 
 class Frame:
+
     def __init__(self, tag) -> None:
         self.obj = tag.find("obj").text
         func = tag.find("fn")
@@ -100,6 +103,7 @@ class Frame:
 
 
 class ValgrindData:
+
     def __init__(self) -> None:
         self.errors: List[Error] = []
         self._source_dir: Optional[str] = None
@@ -213,6 +217,7 @@ class ValgrindData:
     
 
 class Launcher:
+
     def __init__(self, options, exe_file):
         self.options = options
         self.exe_file = exe_file
@@ -233,9 +238,9 @@ class Launcher:
             
         if self.valgrind_enabled:
             if self.valgrind_data.get_num_errors() == 0:
-                lines.append("Valgrind: CLEAN")
+                lines.append("Valgrind: OK")
             else:
-                lines.append("Valgrind: {} ERRORS".format(self.valgrind_data.get_num_errors()))
+                lines.append("Valgrind: FAILED ({} errors)".format(self.valgrind_data.get_num_errors()))
             
         return "\n".join(lines)
         
@@ -251,7 +256,7 @@ class Launcher:
                     os.remove(filename)
 
     def execute(self):
-        stdin =  self.options["execution"]["stdin"]
+        stdin = self.options["execution"]["stdin"]
         
         result = sp.run(self.command, stdout=sp.PIPE, stderr=sp.PIPE, input=stdin, text=True)
         
@@ -265,7 +270,6 @@ class Launcher:
             
             self.valgrind_data = ValgrindData()
             self.valgrind_data.parse(self.options['valgrind']['xml_file'])
-            
         
     def write_report(self):
         with open(self.options["execution"]["report_path"], "w") as f:
