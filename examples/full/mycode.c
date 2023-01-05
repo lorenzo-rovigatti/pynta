@@ -12,6 +12,8 @@ int main() {
 	}
 	fprintf(stderr, "Some debug info that shouldn't be here...\n");
 
+	fprintf(stdout, "FAILED\n");
+
 //	fclose(out); // commented to work up valgrind
 
 	return 0;
