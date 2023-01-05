@@ -4,7 +4,7 @@ Created on Dec 25, 2022
 @author: lorenzo
 '''
 
-import sys
+import sys, os
 import tomli
 
 from compiler import Compiler
@@ -38,7 +38,8 @@ class Input(dict):
             "command" : "valgrind --leak-check=full --show-leak-kinds=all",
             "xml_file" : "valgrind_log.xml"
         },
-        "output_report_path" : "output_report.txt"
+        "output_report_path" : "output_report.txt",
+        "working_dir" : "."
         
     }
     
@@ -54,6 +55,8 @@ class Input(dict):
                 print(f"Cannot parse input file {input_file}: {e}", file=sys.stderr)
                 exit(1)
             self.update(options)
+            
+        self["filename"] = os.path.abspath(self["filename"])
         
         self._check()
         
@@ -79,6 +82,13 @@ if __name__ == '__main__':
         exit(1)
         
     options = Input(sys.argv[1])
+    
+    if not os.path.isdir(options["working_dir"]):
+        # TODO: add an info log entry about creating working_dir
+        os.mkdir(options["working_dir"])
+        
+    os.chdir(options["working_dir"])
+    
     compiler = Compiler(options)
     compiler.write_report()
     print(compiler.summary())

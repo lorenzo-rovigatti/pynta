@@ -6,7 +6,7 @@ pynta is not an automatic grader, but rather a tool that can be used to quickly 
 
 ## Usage
 
-pynta expects a single argument: the path to an input file formatted with [https://github.com/toml-lang/toml](TOML) which specifies how the analysis should be carried out.
+pynta expects a single argument: the path to an input file formatted with [TOML](https://github.com/toml-lang/toml) which specifies how the analysis should be carried out.
 
 ## The input file
 

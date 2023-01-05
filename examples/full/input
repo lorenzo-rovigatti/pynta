@@ -1,4 +1,5 @@
 filename = "mycode.c"
+working_dir = "pynta"
 
 [compilation]
 report_path = "compilation_report.txt"
