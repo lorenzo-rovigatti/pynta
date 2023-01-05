@@ -33,6 +33,16 @@ class Output():
         if "empty" in self.options and self.options["empty"]:
             if len(self.options["output"]) > 0:
                 self.errors.append(f"Not empty as it should be")
+                
+        if "equal_to" in self.options:
+            if not os.path.isfile(self.options["equal_to"]):
+                self.errors.append(f"'equal_to' file '{self.options['equal_to']}' not found")
+            else:
+                with open(self.options['equal_to'])  as f:
+                    equal_to_content = f.read()
+                    
+                if self.options["output"] != equal_to_content:
+                    self.errors.append(f"Not equal to the content of the '{self.options['equal_to']}' file")
         
 
 class CheckOutput():

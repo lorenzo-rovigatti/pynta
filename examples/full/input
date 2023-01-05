@@ -1,5 +1,5 @@
 filename = "mycode.c"
-working_dir = "pynta"
+working_dir = "pynta_output"
 
 [compilation]
 report_path = "compilation_report.txt"
@@ -25,7 +25,7 @@ output_report_path = "output_report.txt"
 
 [[output]]
 type = "stdout"
-empty = true
+equal_to = "../correct_stdout.dat"
 
 [[output]]
 type = "stderr"
@@ -34,3 +34,4 @@ empty = true
 [[output]]
 type = "file"
 name = "output.dat"
+equal_to = "../correct_output.dat"
