@@ -24,14 +24,22 @@ xml_file = "valgrind_log.xml"
 output_report_path = "output_report.txt"
 
 [[output]]
+type = "file"
+name = "output.dat"
+
+[[output.columns]]
+datatype = "int"
+max_length = 10
+
+[[output.columns]]
+datatype = "float"
+decimal_positions = 2
+max_length = 10
+
+[[output]]
 type = "stdout"
-equal_to = "../correct_stdout.dat"
+equal_to = "../correct_output.dat"
 
 [[output]]
 type = "stderr"
 empty = true
-
-[[output]]
-type = "file"
-name = "output.dat"
-equal_to = "../correct_output.dat"

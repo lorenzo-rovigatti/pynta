@@ -240,7 +240,7 @@ class Launcher:
             if self.valgrind_data.get_num_errors() == 0:
                 lines.append("Valgrind: OK")
             else:
-                lines.append("Valgrind: FAILED ({} errors)".format(self.valgrind_data.get_num_errors()))
+                lines.append("Valgrind: FAILED ({} error(s))".format(self.valgrind_data.get_num_errors()))
             
         return "\n".join(lines)
         

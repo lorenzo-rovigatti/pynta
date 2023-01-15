@@ -67,7 +67,7 @@ class Compiler:
         if self.compiled():
             lines.append(u"Compilation: OK ({} warnings)".format(len(self.warnings)))
         else:
-            lines.append("Compilation: FAILED ({} errors)".format(len(self.errors)))
+            lines.append("Compilation: FAILED ({} error(s))".format(len(self.errors)))
             
         if self.all_warnings:
             lines.append("\tCompiling with all warnings enabled found {} warnings".format(len(self.all_warnings)))
