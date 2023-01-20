@@ -43,6 +43,7 @@ class Compiler:
         
         self.command = self.options["compilation"]["command"]
         self.all_warnings_command = self.options["compilation"]["all_warnings_command"]
+        self.command_post = self.options["compilation"]["command_post"]
             
         if self.options["valgrind"]["enable"]:
             self.command += " -g2"
@@ -122,7 +123,7 @@ class Compiler:
         return None
         
     def _invoke_compiler(self, command):
-        result = sp.run(command.split() + ["-o", self.exe_file, self.source_file], stdout=sp.PIPE, stderr=sp.STDOUT, text=True)
+        result = sp.run(command.split() + ["-o", self.exe_file, self.source_file] + self.command_post.split(), stdout=sp.PIPE, stderr=sp.STDOUT, text=True)
         return result.returncode, result.stdout
         
     def compiled(self):

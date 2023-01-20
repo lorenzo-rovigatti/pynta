@@ -23,6 +23,7 @@ class Input(dict):
     defaults = {
         "compilation" : {
             "command" : "gcc",
+            "command_post" : "",
             "all_warnings" : True,
             "all_warnings_command" : "gcc -Wall",
             "report_path" : "compilation_report.txt"
