@@ -83,6 +83,10 @@ class Output():
         return len(self.errors) > 0
         
     def check(self):
+        # this happens when this Output is linked to a file that does not exist
+        if "options" not in self.options:
+            return
+        
         if "empty" in self.options and self.options["empty"]:
             if len(self.options["output"]) > 0:
                 self.errors.append(f"Not empty as it should be")
