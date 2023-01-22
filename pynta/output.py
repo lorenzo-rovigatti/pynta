@@ -84,12 +84,16 @@ class Output():
         
     def check(self):
         # this happens when this Output is linked to a file that does not exist
-        if "options" not in self.options:
+        if "output" not in self.options:
             return
         
-        if "empty" in self.options and self.options["empty"]:
-            if len(self.options["output"]) > 0:
-                self.errors.append(f"Not empty as it should be")
+        if "empty" in self.options:
+            if self.options["empty"]:
+                if len(self.options["output"]) > 0:
+                    self.errors.append(f"Not empty as it should be")
+            else:
+                if len(self.options["output"]) == 0:
+                    self.errors.append(f"The output is empty")
                 
         if "equal_to" in self.options:
             if not os.path.isfile(self.options["equal_to"]):
