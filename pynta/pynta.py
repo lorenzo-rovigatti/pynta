@@ -90,16 +90,21 @@ if __name__ == '__main__':
         
     os.chdir(options["working_dir"])
     
-    compiler = Compiler(options)
-    compiler.write_report()
-    print(compiler.summary())
-    
-    if compiler.compiled():
-        launcher = Launcher(options, compiler.exe_file)
-        launcher.write_report()
-        print(launcher.summary())
+    try:
+        compiler = Compiler(options)
+        compiler.write_report()
+        print(compiler.summary())
         
-        check_output = CheckOutput(options, launcher.stdout, launcher.stderr)
-        check_output.write_report()
-        print(check_output.summary())
+        if compiler.compiled():
+            launcher = Launcher(options, compiler.exe_file)
+            launcher.write_report()
+            print(launcher.summary())
+            
+            check_output = CheckOutput(options, launcher.stdout, launcher.stderr)
+            check_output.write_report()
+            print(check_output.summary())
+    except Exception as e:
+        print(e, file=sys.stderr)
+        exit(1)
+        
     
