@@ -7,6 +7,7 @@ Created on Dec 25, 2022
 import sys, os
 import tomli
 
+from parser import Parser
 from compiler import Compiler
 from launcher import Launcher
 from output import CheckOutput
@@ -21,6 +22,10 @@ class Input(dict):
     required = ["filename"]
     
     defaults = {
+        "parsing" : {
+            "report_path" : "parsing_report.txt",
+            "functions" : []
+        },
         "compilation" : {
             "command" : "gcc",
             "command_post" : "",
@@ -55,11 +60,24 @@ class Input(dict):
             except tomli.TOMLDecodeError as e:
                 print(f"Cannot parse input file {input_file}: {e}", file=sys.stderr)
                 exit(1)
-            self.update(options)
             
+        self.recursive_merge(self, options) # in this way defaults that are not present in the config file are not overwritten
         self["filename"] = os.path.abspath(self["filename"])
         
         self._check()
+
+    @staticmethod
+    def recursive_merge(base, incoming):
+        """
+        Recursively merge `incoming` dictionary into `base`.
+        """
+        for key, value in incoming.items():
+            if isinstance(value, dict) and isinstance(base.get(key), dict):
+                # Recursively merge dictionaries
+                Input.recursive_merge(base[key], value)
+            else:
+                # Overwrite or set the value
+                base[key] = value
         
     def _check(self):
         for key in Input.required:
@@ -91,6 +109,10 @@ if __name__ == '__main__':
     os.chdir(options["working_dir"])
     
     try:
+        parser = Parser(options)
+        parser.write_report()
+        print(parser.summary())
+
         compiler = Compiler(options)
         compiler.write_report()
         print(compiler.summary())

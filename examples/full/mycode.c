@@ -3,6 +3,12 @@
 
 #define N 10
 
+void first_function(int p, const char *c);
+
+double second_function(double f) {
+	return f * 2;
+}
+
 int main() {
 	FILE *out = fopen("output.dat", "w");
 	int i;
@@ -16,4 +22,8 @@ int main() {
 //	fclose(out); // commented to work up valgrind
 
 	return 0;
+}
+
+void first_function(int p, const char *c) {
+	printf("%d\n", p);
 }

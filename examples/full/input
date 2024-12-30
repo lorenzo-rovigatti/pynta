@@ -1,6 +1,19 @@
 filename = "mycode.c"
 working_dir = "pynta_output"
 
+[parsing]
+report_path = "parsing_report.txt"
+
+[[parsing.functions]]
+name = "first_function"
+return_type = "void"
+arg_types = ["int", "const char*"]
+
+[[parsing.functions]]
+name = "second_function"
+return_type = "double"
+arg_types = ["double", "double"]
+
 [compilation]
 report_path = "compilation_report.txt"
 command = "gcc"
